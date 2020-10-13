@@ -43,7 +43,8 @@ func main() {
 
 	wg.Wait()
 
-	fmt.Println("[Main] Scraped " + strconv.Itoa(len(totalProxies)) + " proxies")
+	totalProxies = uniqueArray(totalProxies)
+	fmt.Println("[Main] Scraped " + strconv.Itoa(len(totalProxies)) + " unique proxies")
 	if len(totalProxies) == 0 {
 		return
 	}
@@ -79,4 +80,19 @@ func worker(id int, wg *sync.WaitGroup, url string) {
 		totalProxies = append(totalProxies, proxy)
 	}
 	wg.Done()
+}
+
+func uniqueArray(array []string) []string {
+	m := make(map[string]bool)
+	for _, item := range array {
+		_, ok := m[item]
+		if ok == false {
+			m[item] = true
+		}
+	}
+	var unique []string
+	for item := range m {
+		unique = append(unique, item)
+	}
+	return unique
 }
