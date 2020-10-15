@@ -13,12 +13,16 @@ import (
 var (
 	totalProxies = []string{}
 	urls         = []string{}
+	timeout      int
 )
 
 func main() {
 	input := flag.String("input", "urls.txt", "File to input urls")
 	output := flag.String("output", "proxies.txt", "File to output scraped proxies")
+	timeoutFlag := flag.Int("timeout", 5, "Timeout to proxy list websites.")
 	flag.Parse()
+
+	timeout = *timeoutFlag
 
 	file, err := os.Open(*input)
 	if err != nil {
@@ -31,8 +35,6 @@ func main() {
 		urls = append(urls, scanner.Text())
 	}
 	file.Close()
-
-	fmt.Println(urls)
 
 	var wg sync.WaitGroup
 
@@ -69,7 +71,7 @@ func main() {
 
 func worker(id int, wg *sync.WaitGroup, url string) {
 	fmt.Println("[" + strconv.Itoa(id+1) + "] Scraping @ " + url)
-	proxies, err := scrape(url)
+	proxies, err := scrape(url, timeout)
 	if err != nil {
 		fmt.Println("[" + strconv.Itoa(id+1) + "] " + err.Error() + " @ " + url)
 		wg.Done()

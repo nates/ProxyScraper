@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-func scrape(url string) ([]string, error) {
+func scrape(url string, timeout int) ([]string, error) {
 	proxyRegex := regexp.MustCompile(`(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):([0-9]){1,4}`)
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: time.Duration(timeout) * time.Second,
 	}
 	response, err := client.Get(url)
 	if err != nil {
