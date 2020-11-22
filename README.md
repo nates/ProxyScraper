@@ -17,5 +17,5 @@ https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&cou
 
 ## Usage
 ```
-./scraper.exe -input=urls.txt -output=proxies.txt
+./scraper.exe -input=urls.txt -output=proxies.txt -timeout=5
 ```
