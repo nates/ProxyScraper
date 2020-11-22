@@ -15,12 +15,12 @@ func scrape(url string, timeout int) ([]string, error) {
 	}
 	response, err := client.Get(url)
 	if err != nil {
-		return nil, errors.New("Error requesting")
+		return nil, errors.New("bad request")
 	}
 	defer response.Body.Close()
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, errors.New("Error reading body")
+		return nil, errors.New("could not read body")
 	}
 	proxies := proxyRegex.FindAllString(string(body), -1)
 	return proxies, nil

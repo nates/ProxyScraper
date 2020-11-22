@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"flag"
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -11,22 +11,22 @@ import (
 )
 
 var (
-	totalProxies = []string{}
-	urls         = []string{}
-	timeout      int
+	totalProxies []string
+	urls         []string
+	timeout      int    = 5
+	input        string = "urls.txt"
+	output       string = "proxies.txt"
 )
 
 func main() {
-	input := flag.String("input", "urls.txt", "File to input urls")
-	output := flag.String("output", "proxies.txt", "File to output scraped proxies")
-	timeoutFlag := flag.Int("timeout", 5, "Timeout to proxy list websites.")
+	flag.StringVar(&input, "input", input, "File to input urls")
+	flag.StringVar(&output, "output", output, "File to output scraped proxies")
+	flag.IntVar(&timeout, "timeout", timeout, "Timeout to proxy list websites.")
 	flag.Parse()
 
-	timeout = *timeoutFlag
-
-	file, err := os.Open(*input)
+	file, err := os.Open(input)
 	if err != nil {
-		fmt.Println("Error reading " + *input)
+		log.Println("Error reading " + input)
 		return
 	}
 	scanner := bufio.NewScanner(file)
@@ -46,38 +46,38 @@ func main() {
 	wg.Wait()
 
 	totalProxies = uniqueArray(totalProxies)
-	fmt.Println("[Main] Scraped " + strconv.Itoa(len(totalProxies)) + " unique proxies")
+	log.Println("[Main] Scraped " + strconv.Itoa(len(totalProxies)) + " unique proxies")
 	if len(totalProxies) == 0 {
 		return
 	}
-	file, err = os.Create(*output)
+	file, err = os.Create(output)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	_, err = file.WriteString(strings.Join(totalProxies, "\n"))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		file.Close()
 		return
 	}
 	err = file.Close()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	fmt.Println("[Main] Wrote proxies to " + *output)
+	log.Println("[Main] Wrote proxies to " + output)
 }
 
 func worker(id int, wg *sync.WaitGroup, url string) {
-	fmt.Println("[" + strconv.Itoa(id+1) + "] Scraping @ " + url)
+	log.Println("[" + strconv.Itoa(id+1) + "] Scraping @ " + url)
 	proxies, err := scrape(url, timeout)
 	if err != nil {
-		fmt.Println("[" + strconv.Itoa(id+1) + "] " + err.Error() + " @ " + url)
+		log.Println("[" + strconv.Itoa(id+1) + "] " + err.Error() + " @ " + url)
 		wg.Done()
 		return
 	}
-	fmt.Println("[" + strconv.Itoa(id+1) + "] Scraped " + strconv.Itoa(len(proxies)) + " proxies @ " + url)
+	log.Println("[" + strconv.Itoa(id+1) + "] Scraped " + strconv.Itoa(len(proxies)) + " proxies @ " + url)
 	for _, proxy := range proxies {
 		totalProxies = append(totalProxies, proxy)
 	}
