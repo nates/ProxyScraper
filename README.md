@@ -1,4 +1,4 @@
-# 🖨️ ProxyScraper
+# 🖨️ scraper
 A multi-threaded proxy scraper made in Go. 
 ## 🧳 Requirements
 * Go (latest)
